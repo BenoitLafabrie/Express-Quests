@@ -11,13 +11,11 @@ const hashingOptions = {
 
 const hashPassword = (req, res, next) => {
   argon2
-    .verify(req.user.hashedPassword, req.body.password)
-    .then((isVerified) => {
-      if (isVerified) {
-        res.send("Credentials are valid");
-      } else {
-        res.sendStatus(401);
-      }
+    .hash(req.body.password, hashingOptions)
+    .then((hashedPassword) => {
+      req.body.hashedPassword = hashedPassword;
+      delete req.body.password;
+      next();
     })
     .catch((err) => {
       console.error(err);
